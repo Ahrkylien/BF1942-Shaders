@@ -39,9 +39,7 @@ mul r3, INDICES.zyxw,CONST.xxxx
 
 mov a0.x, r3.x
 // Transform offset 0 by bone0.
-dp4 r1.x, VERTEX_OFFSET0, c[a0.x+BONE_START_1]
-dp4 r1.y, VERTEX_OFFSET0, c[a0.x+BONE_START_2]
-dp4 r1.z, VERTEX_OFFSET0, c[a0.x+BONE_START_3]
+m4x3 r1.xyz, VERTEX_OFFSET0, c[a0.x+BONE_START_1]
 m3x3 r5.xyz, VERTEX_NORMAL, c[a0.x+BONE_START_1]
 // Weigh vertex.
 mul r2.xyz, r1.xyz, WEIGHTS.x
@@ -49,24 +47,14 @@ mul r4.xyz, r5.xyz, WEIGHTS.x
 
 mov a0.x, r3.y
 // Transform offset 1 by bone1.
-dp4 r1.x, VERTEX_OFFSET1, c[a0.x+BONE_START_1]
-dp4 r1.y, VERTEX_OFFSET1, c[a0.x+BONE_START_2]
-dp4 r1.z, VERTEX_OFFSET1, c[a0.x+BONE_START_3]
+m4x3 r1.xyz, VERTEX_OFFSET1, c[a0.x+BONE_START_1]
 m3x3 r5.xyz, VERTEX_NORMAL, c[a0.x+BONE_START_1]
 // Weigh vertex.
 mad r2.xyz, r1.xyz, WEIGHTS.y, r2.xyz
 mad r4.xyz, r5.xyz, WEIGHTS.y, r4.xyz
 
 mov r2.w, CONST.y 
-dp4 oPos.x, r2, WORLD_VIEW_PROJ_MATRIX_1
-dp4 oPos.y, r2, WORLD_VIEW_PROJ_MATRIX_2 
-dp4 oPos.z, r2, WORLD_VIEW_PROJ_MATRIX_3 
-dp4 oPos.w, r2, WORLD_VIEW_PROJ_MATRIX_4
-
-;dp4 oPos.x, VERTEX_OFFSET0, WORLD_VIEW_PROJ_MATRIX_1
-;dp4 oPos.y, VERTEX_OFFSET0, WORLD_VIEW_PROJ_MATRIX_2 
-;dp4 oPos.z, VERTEX_OFFSET0, WORLD_VIEW_PROJ_MATRIX_3 
-;dp4 oPos.w, VERTEX_OFFSET0, WORLD_VIEW_PROJ_MATRIX_4
+m4x4 oPos, r2, WORLD_VIEW_PROJ_MATRIX_1
 
 // Compute fog.
 dp4 r1.x, r2, WORLD_VIEW_PROJ_MATRIX_4
@@ -77,8 +65,6 @@ mad oT0, TEX_COORDS, CONST.y, CONST.zwww	// TEX_COORDS + [Offset,0,0,0]
 
 // Lighting.
 // normalize normals
-mov r4.x, r4.x
-mov r4.z, r4.z
 dp3 r4.w, r4, r4;
 rsq r4.w, r4.w
 mul r4, r4, r4.w;
